@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using EF.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.ComponentModel;
 using System.Data;
@@ -7,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace EF
 {
-    class Wallet
+    class Wallet: ICRUD
     {
         #region
         public Wallet(int id, string? holder, decimal balance)
@@ -17,6 +18,9 @@ namespace EF
             Balance = balance;
         }
 
+        public Wallet()
+        {
+        }
 
         public int Id { get; set; }
         public string? Holder { get; set; }
@@ -44,7 +48,7 @@ namespace EF
 
         [Description("This method is used to add record to sql table ,and didn't return anything from the table " +
             "If The Query Is success , the method will return true, else return false")]
-        public static bool Add(string? holder, decimal balance)
+        public  bool Add(string? holder, decimal balance)
         {
             #region
             SqlConnection sqlConnection = new SqlConnection(ConnString);
@@ -93,7 +97,7 @@ namespace EF
         }
 
         [Description("This method is used to Get All records")]
-        public static bool GetAll(ref List<Wallet> wallets)
+        public  bool GetAll(ref List<Wallet> wallets)
         {
             #region
             wallets = new List<Wallet>();
@@ -148,6 +152,20 @@ namespace EF
             return $"{Id.ToString().PadRight(5)} {Holder?.ToString().PadRight(20)} {Balance:C}";
         }
 
+        public bool Delete(int RecordId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Update(Wallet Record)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetAtID<T>(int Id)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

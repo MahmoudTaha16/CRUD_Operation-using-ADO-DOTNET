@@ -10,8 +10,9 @@ namespace EF
         {
            List<Wallet> wallets=new List<Wallet>();
 
+            Wallet wallet=new Wallet();
 
-            if (Wallet.GetAll(ref wallets))
+            if (wallet.GetAll(ref wallets))
             {
                 Print(wallets.Select(x=>x.ToString()));
             }
@@ -21,7 +22,7 @@ namespace EF
             }
 
             Console.WriteLine(  "Ad New Record");
-            if (Wallet.Add("Mahmoud", 40000))
+            if (wallet.Add("Mahmoud", 40000))
             {
                 Console.WriteLine("Record has been added Successfully");
 
