@@ -7,19 +7,19 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace EF
+namespace EF.Ado
 {
-    class Wallet: ICRUD,IDocumenation,ITransaction
+    class Wallet_Ado : ICRUD_Ado, IDocumenation, ITransaction
     {
         #region
-        public Wallet(int id, string? holder, decimal balance)
+        public Wallet_Ado(int id, string? holder, decimal balance)
         {
             Id = id;
             Holder = holder;
             Balance = balance;
         }
 
-        public Wallet()
+        public Wallet_Ado()
         {
         }
 
@@ -28,16 +28,16 @@ namespace EF
         public decimal Balance { get; set; }
         #endregion
 
-       static string? _ConnString;
+        static string? _ConnString;
         public static string? ConnString
         {
             get
             {
                 if (_ConnString == null)
                 {
-                     _ConnString = new ConfigurationBuilder().AddJsonFile("" +
-                         "D:\\Programming\\EF\\CRUD_Operation-using-ADO-DOTNET\\EF\\appSettings.json")
-                                                   .Build().GetSection("ConnString").Value;
+                    _ConnString = new ConfigurationBuilder().AddJsonFile("" +
+                        "D:\\Programming\\EF\\CRUD_Operation-using-ADO-DOTNET\\EF\\appSettings.json")
+                                                  .Build().GetSection("ConnString").Value;
                 }
                 return _ConnString;
             }
@@ -49,7 +49,7 @@ namespace EF
 
         [Description("This method is used to add record to sql table ,and didn't return anything from the table " +
             "If The Query Is success , the method will return true, else return false,  sql text command")]
-        public  bool Add(string? holder, decimal balance)
+        public bool Add(string? holder, decimal balance)
         {
             #region
             SqlConnection sqlConnection = new SqlConnection(ConnString);
@@ -60,19 +60,19 @@ namespace EF
                 {
                     string sql = $"INSERT INTO [dbo].[Wallets] ([Holder] ,[Balance]) " +
                       $"VALUES (@Holder,@Balance)";
-                    SqlCommand cmd = new SqlCommand( sql, sqlConnection);
-                   
+                    SqlCommand cmd = new SqlCommand(sql, sqlConnection);
+
                     SqlParameter sqlParameter_Holder = new SqlParameter()
                     {
                         ParameterName = "@Holder",
-                        DbType = System.Data.DbType.String,
+                        DbType = DbType.String,
                         Direction = ParameterDirection.Input,
                         Value = holder
                     };
                     SqlParameter sqlParameter_Balance = new SqlParameter()
                     {
                         ParameterName = "@Balance",
-                        DbType = System.Data.DbType.Decimal,
+                        DbType = DbType.Decimal,
                         Direction = ParameterDirection.Input,
                         Value = balance
                     };
@@ -81,7 +81,7 @@ namespace EF
                     sqlConnection.Open();
                     using (cmd)
                     {
-                         result = cmd.ExecuteNonQuery();
+                        result = cmd.ExecuteNonQuery();
                     }
 
                 }
@@ -95,15 +95,15 @@ namespace EF
                 sqlConnection.Close();
             }
 
-            return result != -1 || result==0;
+            return result != -1 || result == 0;
             #endregion
         }
 
         [Description("This method is used to Get All records,sql text command")]
-        public  bool GetAll(ref List<Wallet> wallets)
+        public bool GetAll(ref List<Wallet_Ado> wallets)
         {
             #region
-            wallets = new List<Wallet>();
+            wallets = new List<Wallet_Ado>();
             SqlConnection sqlConnection = new SqlConnection(ConnString);
             int result = 0;
             try
@@ -116,22 +116,22 @@ namespace EF
                     sqlConnection.Open();
                     using (cmd)
                     {
-                       SqlDataReader sqlDataReader= cmd.ExecuteReader();
-                        Wallet wallet;
-                       
+                        SqlDataReader sqlDataReader = cmd.ExecuteReader();
+                        Wallet_Ado wallet;
+
                         while (sqlDataReader.Read())
                         {
-                            wallet = new Wallet(
+                            wallet = new Wallet_Ado(
                                      sqlDataReader.GetInt32("Id"),
                                      sqlDataReader.GetString("Holder"),
                                      sqlDataReader.GetDecimal("Balance")
                                     );
-                            wallets.Add( wallet );
+                            wallets.Add(wallet);
                         }
                     }
                 }
             }
-            catch( Exception ex ) 
+            catch (Exception ex)
             {
                 ErrorHandling(ex);
             }
@@ -145,7 +145,7 @@ namespace EF
         }
 
         [Conditional("DEBUG")]
-        [Description("This Method Is Used to display the Error Message if there is any Exception " )]
+        [Description("This Method Is Used to display the Error Message if there is any Exception ")]
         private static void ErrorHandling(Exception ex)
         {
             Console.WriteLine($"{ex.Message.ToString()} \n {ex.StackTrace?.ToString()}");
@@ -172,7 +172,7 @@ namespace EF
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = RecordId
                     };
@@ -205,7 +205,7 @@ namespace EF
         }
 
         [Description("This Method Is Used to update a record using the given id ,sql text command")]
-        public bool Update(Wallet Record)
+        public bool Update(Wallet_Ado Record)
         {
             #region
             SqlConnection sqlConnection = new SqlConnection(ConnString);
@@ -224,7 +224,7 @@ namespace EF
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = Record.Id
                     };
@@ -233,14 +233,14 @@ namespace EF
                     SqlParameter sqlParameter_Holder = new SqlParameter()
                     {
                         ParameterName = "@Holder",
-                        DbType = System.Data.DbType.String,
+                        DbType = DbType.String,
                         Direction = ParameterDirection.Input,
                         Value = Record.Holder
                     };
                     SqlParameter sqlParameter_Balance = new SqlParameter()
                     {
                         ParameterName = "@Balance",
-                        DbType = System.Data.DbType.Decimal,
+                        DbType = DbType.Decimal,
                         Direction = ParameterDirection.Input,
                         Value = Record.Balance
                     };
@@ -269,11 +269,11 @@ namespace EF
         }
 
         [Description("This Method Is Used to Return a record using the given id using the sql text command ")]
-        public Wallet GetAtID(int Id)
+        public Wallet_Ado GetAtID(int Id)
         {
             #region
 
-            Wallet wallet = new Wallet();
+            Wallet_Ado wallet = new Wallet_Ado();
             wallet.Id = -1;
 
             SqlConnection sqlConnection = new SqlConnection(ConnString);
@@ -289,7 +289,7 @@ namespace EF
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = Id
                     };
@@ -300,7 +300,7 @@ namespace EF
                     using (cmd)
                     {
 
-                       SqlDataReader sqlDataReader= cmd.ExecuteReader();
+                        SqlDataReader sqlDataReader = cmd.ExecuteReader();
                         while (sqlDataReader.Read())
                         {
                             wallet.Id = sqlDataReader.GetInt32("Id");
@@ -331,7 +331,7 @@ namespace EF
         public bool IsExist(int Id)
         {
             #region
-            bool IsExist=false;
+            bool IsExist = false;
             SqlConnection sqlConnection = new SqlConnection(ConnString);
             try
             {
@@ -345,7 +345,7 @@ namespace EF
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = Id
                     };
@@ -355,7 +355,7 @@ namespace EF
                     sqlConnection.Open();
                     using (cmd)
                     {
-                        object result= cmd.ExecuteScalar();
+                        object result = cmd.ExecuteScalar();
                         IsExist = result is null ? false : true;
 
                     }
@@ -378,10 +378,10 @@ namespace EF
         }
 
         [Description("This method is used to Get All records,sql Stored Procedure command")]
-        public bool GetAll_UsingProcedure(ref List<Wallet> wallets)
+        public bool GetAll_UsingProcedure(ref List<Wallet_Ado> wallets)
         {
             #region
-            wallets = new List<Wallet>();
+            wallets = new List<Wallet_Ado>();
             SqlConnection sqlConnection = new SqlConnection(ConnString);
             int result = 0;
             try
@@ -395,11 +395,11 @@ namespace EF
                     using (cmd)
                     {
                         SqlDataReader sqlDataReader = cmd.ExecuteReader();
-                        Wallet wallet;
+                        Wallet_Ado wallet;
 
                         while (sqlDataReader.Read())
                         {
-                            wallet = new Wallet(
+                            wallet = new Wallet_Ado(
                                      sqlDataReader.GetInt32("Id"),
                                      sqlDataReader.GetString("Holder"),
                                      sqlDataReader.GetDecimal("Balance")
@@ -437,18 +437,18 @@ namespace EF
                 {
                     string sql = $"Add_UsingProcedure";
                     SqlCommand cmd = new SqlCommand(sql, sqlConnection);
-                    cmd.CommandType= CommandType.StoredProcedure;
+                    cmd.CommandType = CommandType.StoredProcedure;
                     SqlParameter sqlParameter_Holder = new SqlParameter()
                     {
                         ParameterName = "@Holder",
-                        DbType = System.Data.DbType.String,
+                        DbType = DbType.String,
                         Direction = ParameterDirection.Input,
                         Value = holder
                     };
                     SqlParameter sqlParameter_Balance = new SqlParameter()
                     {
                         ParameterName = "@Balance",
-                        DbType = System.Data.DbType.Decimal,
+                        DbType = DbType.Decimal,
                         Direction = ParameterDirection.Input,
                         Value = balance
                     };
@@ -491,7 +491,7 @@ namespace EF
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = RecordId
                     };
@@ -524,7 +524,7 @@ namespace EF
         }
 
         [Description("This Method Is Used to update a record using the given id ,sql Stored Procedure command")]
-        public bool Update_UsingProcedure(Wallet Record)
+        public bool Update_UsingProcedure(Wallet_Ado Record)
         {
             #region
             SqlConnection sqlConnection = new SqlConnection(ConnString);
@@ -535,11 +535,11 @@ namespace EF
                 {
                     string sql = @"sp_UpdateRecord ";
                     SqlCommand cmd = new SqlCommand(sql, sqlConnection);
-                    cmd.CommandType= CommandType.StoredProcedure;
+                    cmd.CommandType = CommandType.StoredProcedure;
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = Record.Id
                     };
@@ -547,7 +547,7 @@ namespace EF
                     SqlParameter sqlParameter_Holder = new SqlParameter()
                     {
                         ParameterName = "@Holder",
-                        DbType = System.Data.DbType.String,
+                        DbType = DbType.String,
                         Direction = ParameterDirection.Input,
                         Value = Record.Holder
                     };
@@ -555,7 +555,7 @@ namespace EF
                     SqlParameter sqlParameter_Balance = new SqlParameter()
                     {
                         ParameterName = "@Balance",
-                        DbType = System.Data.DbType.Decimal,
+                        DbType = DbType.Decimal,
                         Direction = ParameterDirection.Input,
                         Value = Record.Balance
                     };
@@ -580,8 +580,8 @@ namespace EF
                 {
                     sqlConnection.Close();
                 }
-                catch {  }
-                
+                catch { }
+
             }
 
             return result > 0;
@@ -589,11 +589,11 @@ namespace EF
         }
 
         [Description("This Method Is Used to Return a record using the given id using the sql Procedure command ")]
-        public Wallet GetAtID_UsingProcedure(int Id)
+        public Wallet_Ado GetAtID_UsingProcedure(int Id)
         {
             #region
 
-            Wallet wallet = new Wallet();
+            Wallet_Ado wallet = new Wallet_Ado();
             wallet.Id = -1;
 
             SqlConnection sqlConnection = new SqlConnection(ConnString);
@@ -607,7 +607,7 @@ namespace EF
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = Id
                     };
@@ -664,19 +664,19 @@ namespace EF
                     //    ParameterName = "@Id",
                     //    DbType = System.Data.DbType.Int32,
                     //    Direction = ParameterDirection.Output,
-                     
+
                     //}; 
                     SqlParameter sqlParameter_Holder = new SqlParameter()
                     {
                         ParameterName = "@Holder",
-                        DbType = System.Data.DbType.String,
+                        DbType = DbType.String,
                         Direction = ParameterDirection.Input,
                         Value = holder
                     };
                     SqlParameter sqlParameter_Balance = new SqlParameter()
                     {
                         ParameterName = "@Balance",
-                        DbType = System.Data.DbType.Decimal,
+                        DbType = DbType.Decimal,
                         Direction = ParameterDirection.Input,
                         Value = balance
                     };
@@ -742,11 +742,12 @@ namespace EF
             return dataTable;
             #endregion
         }
-
+        [Description("This method is used to (Document) descripe the usage of the mathods")]
         public string Document()
         {
+            #region
             StringBuilder stringBuilder = new StringBuilder();
-            Type ObjectType = typeof(Wallet);
+            Type ObjectType = typeof(Wallet_Ado);
 
             if (ObjectType != null)
             {
@@ -763,10 +764,10 @@ namespace EF
                         description = attr.Description;
                     }
                     if (description == "") continue;
-                    string privateorPublic=item.IsPrivate ? "Private" : "Public";
+                    string privateorPublic = item.IsPrivate ? "Private" : "Public";
                     stringBuilder.AppendLine(
                         $"{description} \n {privateorPublic} {item.ReturnType}   {item.Name} " +
-                         $"( {String.Join(" , ", item.GetParameters().Select(x => x.ParameterType.ToString() + "  " + x.Name).ToList())})"
+                         $"( {string.Join(" , ", item.GetParameters().Select(x => x.ParameterType.ToString() + "  " + x.Name).ToList())})"
                         );
 
                     stringBuilder.AppendLine();
@@ -776,27 +777,29 @@ namespace EF
 
             }
             return stringBuilder.ToString();
+            #endregion
+
 
         }
         [Description("This method used to transfer balance from first id into the second id ")]
-        public bool TransactionBalance(int Id1, int Id2, decimal BalanceToTransferFrom1_2,ref string Message)
+        public bool TransactionBalance(int Id1, int Id2, decimal BalanceToTransferFrom1_2, ref string Message)
         {
             #region
 
-            Wallet wallet1 = null;
-            Wallet wallet2 = null;
-           if( !(IsExist(Id1)))
-           {
-               Message = "Wallet 1  is not exist";
-               return false;
-           }
+            Wallet_Ado wallet1 = null;
+            Wallet_Ado wallet2 = null;
+            if (!IsExist(Id1))
+            {
+                Message = "Wallet 1  is not exist";
+                return false;
+            }
             wallet1 = GetAtID(Id1);
 
-           if ( !(IsExist(Id2)))
-           {
-               Message = "Wallet 2  is not exist";
-               return false;
-           }
+            if (!IsExist(Id2))
+            {
+                Message = "Wallet 2  is not exist";
+                return false;
+            }
             wallet2 = GetAtID(Id2);
 
 
@@ -805,13 +808,13 @@ namespace EF
                 Message = "The amount is greater than the available balance";
                 return false;
             }
-            wallet1.Balance-=BalanceToTransferFrom1_2;
-            wallet2.Balance+=BalanceToTransferFrom1_2;
+            wallet1.Balance -= BalanceToTransferFrom1_2;
+            wallet2.Balance += BalanceToTransferFrom1_2;
 
 
             SqlConnection sqlConnection = new SqlConnection(ConnString);
             int result = 0;
-           
+
             string sql = @"sp_UpdateRecord ";
             SqlCommand cmd = new SqlCommand(sql, sqlConnection);
 
@@ -824,7 +827,7 @@ namespace EF
                     SqlParameter sqlParameter_Id = new SqlParameter()
                     {
                         ParameterName = "@Id",
-                        DbType = System.Data.DbType.Int32,
+                        DbType = DbType.Int32,
                         Direction = ParameterDirection.Input,
                         Value = wallet1.Id
                     };
@@ -832,7 +835,7 @@ namespace EF
                     SqlParameter sqlParameter_Holder = new SqlParameter()
                     {
                         ParameterName = "@Holder",
-                        DbType = System.Data.DbType.String,
+                        DbType = DbType.String,
                         Direction = ParameterDirection.Input,
                         Value = wallet1.Holder
                     };
@@ -840,18 +843,18 @@ namespace EF
                     SqlParameter sqlParameter_Balance = new SqlParameter()
                     {
                         ParameterName = "@Balance",
-                        DbType = System.Data.DbType.Decimal,
+                        DbType = DbType.Decimal,
                         Direction = ParameterDirection.Input,
                         Value = wallet1.Balance
                     };
                     cmd.Parameters.Add(sqlParameter_Id);
                     cmd.Parameters.Add(sqlParameter_Holder);
                     cmd.Parameters.Add(sqlParameter_Balance);
-                 
+
                     sqlConnection.Open();
                     sqlTransaction = sqlConnection.BeginTransaction();
 
-                   
+
                     try
                     {
                         using (cmd)
@@ -867,7 +870,7 @@ namespace EF
                         sqlParameter_Id = new SqlParameter()
                         {
                             ParameterName = "@Id",
-                            DbType = System.Data.DbType.Int32,
+                            DbType = DbType.Int32,
                             Direction = ParameterDirection.Input,
                             Value = wallet2.Id
                         };
@@ -875,7 +878,7 @@ namespace EF
                         sqlParameter_Holder = new SqlParameter()
                         {
                             ParameterName = "@Holder",
-                            DbType = System.Data.DbType.String,
+                            DbType = DbType.String,
                             Direction = ParameterDirection.Input,
                             Value = wallet2.Holder
                         };
@@ -883,7 +886,7 @@ namespace EF
                         sqlParameter_Balance = new SqlParameter()
                         {
                             ParameterName = "@Balance",
-                            DbType = System.Data.DbType.Decimal,
+                            DbType = DbType.Decimal,
                             Direction = ParameterDirection.Input,
                             Value = wallet2.Balance
                         };
@@ -900,7 +903,7 @@ namespace EF
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message.ToString()+"\n"+ex.StackTrace?.ToString());
+                        Console.WriteLine(ex.Message.ToString() + "\n" + ex.StackTrace?.ToString());
                         try
                         {
                             sqlTransaction?.Rollback();
@@ -922,7 +925,7 @@ namespace EF
             }
             catch (Exception ex)
             {
-               
+
                 ErrorHandling(ex);
             }
             finally
