@@ -1,5 +1,7 @@
 ﻿using EF.Ado;
 using EF.Dapper;
+using EF.NHibernate;
+using NHibernate.Linq;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -12,7 +14,11 @@ namespace EF
     {
         static void Main(string[] args)
         {
-            DapperOpertaionsTest.Tests();
+            ;
+
+            //Console.WriteLine(WalletMapping.CreateSession().MappedAs);
+            NHibernateTests.Tests();
+
         }
 
     }
