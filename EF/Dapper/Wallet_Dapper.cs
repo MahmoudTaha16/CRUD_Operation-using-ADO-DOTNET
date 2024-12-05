@@ -370,6 +370,7 @@ namespace EF.Dapper
         [Description("This method is used to (Document) descripe the usage of the mathods")]
         public string Document()
         {
+            #region
             StringBuilder stringBuilder = new StringBuilder();
             Type ObjectType = typeof(Wallet_Dapper);
 
@@ -396,7 +397,7 @@ namespace EF.Dapper
                 }
             }
             return stringBuilder.ToString();
-
+            #endregion
         }
     }
 }
